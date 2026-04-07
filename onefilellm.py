@@ -101,7 +101,7 @@ load_configuration()
 # --- End Output Format Notes ---
 
 # --- Configuration Directories ---
-EXCLUDED_DIRS = ["dist", "node_modules", ".git", "__pycache__"]
+EXCLUDED_DIRS = ["dist", "node_modules", ".git", "__pycache__", ".github", ".vscode", ".shopify", "temp", "templates", ".vercel", "build", "types", "seeding-csv-data"]
 
 # Extensions to skip when processing direct file URLs
 DISALLOWED_EXTENSIONS = {'.pdf'}
@@ -421,7 +421,7 @@ def process_github_repo(repo_url):
                 if file_info["type"] == "dir" and file_info["name"] in EXCLUDED_DIRS:
                     continue
 
-                if file_info["type"] == "file" and is_allowed_filetype(file_info["name"]):
+                if file_info["type"] == "file" and is_allowed_filetype(file_info["name"]) and not is_excluded_file(file_info["name"]):
                     print(f"Processing {file_info['path']}...")
                     with tempfile.TemporaryDirectory() as temp_dir:
                         temp_file = os.path.join(temp_dir, file_info["name"])
@@ -475,7 +475,7 @@ def process_local_folder(local_path, console: Console):
                     if item not in EXCLUDED_DIRS:
                         process_local_directory_recursive(item_path, content_list, console)
                 elif os.path.isfile(item_path):
-                    if is_allowed_filetype(item):
+                    if is_allowed_filetype(item) and not is_excluded_file(item):
                         console.print(f"Processing {item_path}...")
                         content_list.append(f'\n<file path="{escape_xml(relative_path)}">')
                         try:
@@ -3433,6 +3433,9 @@ REAL-WORLD USE CASES:
     parser.add_argument('-f', '--format', choices=['text', 'markdown', 'json', 'html', 'yaml', 'doculing', 'markitdown'],
                         help='Override format detection for text input')
     
+    # Output options
+    parser.add_argument('--filename', help='File name to output')
+    
     # Alias management
     alias_group = parser.add_argument_group('Alias Management')
     alias_group.add_argument('--alias-add', nargs='+', metavar=('NAME', 'COMMAND_STRING'),
@@ -3753,6 +3756,8 @@ async def main(argv: Optional[List[str]] = None):
 
     # Define output filenames
     output_file = "output.xml" # Changed extension to reflect content
+    if args.filename:
+        output_file = f"{str(args.filename)}.xml"
     processed_file = "compressed_output.txt" # Keep as txt for compressed
     
     # List to collect individual outputs

@@ -295,11 +295,12 @@ def is_excluded_file(filename: str) -> bool:
         r'\.min\.css$',        # Minified CSS
         r'__pycache__',        # Python cache
         r'\.pyc$',             # Python compiled files
-        r'node_modules',       # Node.js modules
-        r'vendor/',            # Vendor directories
-        r'\.git/',             # Git directory
-        r'dist/',              # Distribution directories
-        r'build/',             # Build directories
+        r'node_modules(/|$)',  # Node.js modules
+        r'vendor(/|$)',        # Vendor directories
+        r'\.git(/|$)',         # Git directory
+        r'dist(/|$)',          # Distribution directories
+        r'build(/|$)',         # Build directories
+        r'package-lock\.json$',# Package lock
     ]
     
     for pattern in excluded_patterns:
