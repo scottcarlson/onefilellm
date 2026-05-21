@@ -507,6 +507,8 @@ def process_local_folder(local_path, console: Console):
                             console.print(f"[bold red]Error reading file {item_path}: {e}[/bold red]")
                             content_list.append(f'<error>Failed to read file: {escape_xml(str(e))}</error>')
                         content_list.append('</file>')
+                    else:
+                        console.print(f"[bold yellow]Skipping[/bold yellow] {item_path}...")
         except Exception as e:
              console.print(f"[bold red]Error reading directory {current_path}: {e}[/bold red]")
              content_list.append(f'<error>Failed reading directory {escape_xml(current_path)}: {escape_xml(str(e))}</error>')
